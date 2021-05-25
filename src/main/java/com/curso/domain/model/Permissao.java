@@ -1,5 +1,6 @@
 package com.curso.domain.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,11 +25,13 @@ public class Permissao {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_permissao")
-	@SequenceGenerator(name = "seq_permissao", sequenceName = "seq_permissao", initialValue = 1)
+	@SequenceGenerator(name = "seq_permissao", sequenceName = "seq_permissao", initialValue = 1, allocationSize = 1)
 	@EqualsAndHashCode.Include
 	private Long id;
 	
+	@Column(nullable = false)
 	private String nome;
+	
 	private String descricao;
 
 }

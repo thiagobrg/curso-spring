@@ -24,7 +24,7 @@ public class FormaPagamento {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_forma_pagamento")
-	@SequenceGenerator(name = "seq_forma_pagamento", sequenceName = "seq_forma_pagamento", initialValue = 1)
+	@SequenceGenerator(name = "seq_forma_pagamento", sequenceName = "seq_forma_pagamento", initialValue = 1, allocationSize = 1)
 	@EqualsAndHashCode.Include
 	private Long id;
 	
