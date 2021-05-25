@@ -28,10 +28,11 @@ public class Restaurante {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_restaurante")
-	@SequenceGenerator(name = "seq_restaurante", sequenceName = "seq_restaurante", initialValue = 1)
+	@SequenceGenerator(name = "seq_restaurante", sequenceName = "seq_restaurante", initialValue = 1, allocationSize = 1)
 	@EqualsAndHashCode.Include
 	private Long id;
 
+	@Column(nullable = false)
 	private String nome;
 
 	@Column(name = "taxa_frete")
