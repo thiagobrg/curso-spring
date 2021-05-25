@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,14 +74,24 @@ public class RestauranteController {
 	}
 
 	@PutMapping("/{restauranteId}")
-	public ResponseEntity<Restaurante> update(@PathVariable Long restauranteId, @RequestBody Restaurante restaurante) {
-
-		if (restauranteRepository.existsById(restauranteId)) {
-			restaurante.setId(restauranteId);
-			return ResponseEntity.ok(restauranteService.save(restaurante));
+	public ResponseEntity<?> update(@PathVariable Long restauranteId, @RequestBody Restaurante restaurante) {
+		try {
+			Restaurante restauranteAtual = restauranteRepository
+					.findById(restauranteId).orElse(null);
+			
+			if (restauranteAtual != null) {
+				BeanUtils.copyProperties(restaurante, restauranteAtual, 
+						"id", "formasPagamento", "endereco", "dataCadastro");
+				
+				restauranteAtual = restauranteRepository.save(restauranteAtual);
+				return ResponseEntity.ok(restauranteAtual);
+			}
+			
+			return ResponseEntity.notFound().build();
+		
+		} catch (EntidadeNaoEncontradaException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
-
-		return ResponseEntity.notFound().build();
 	}
 
 	@DeleteMapping("/{restauranteId}")
