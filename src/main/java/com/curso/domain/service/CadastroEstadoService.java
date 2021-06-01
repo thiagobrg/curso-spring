@@ -6,38 +6,39 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import com.curso.domain.exception.EntidadeEmUsoException;
-import com.curso.domain.exception.EntidadeNaoEncontradaException;
+import com.curso.domain.exception.EstadoNaoEncontradoException;
 import com.curso.domain.model.Estado;
 import com.curso.domain.repository.EstadoRepository;
 
-/**
- * 
- * @author Thiago Guimarães
- * @email thiagobrg98@gmail.com
- * @date 07-04-2021 19:51:20
- */
 @Service
-public class EstadoService {
+public class CadastroEstadoService {
 
+	private static final String MSG_ESTADO_EM_USO 
+		= "Estado de código %d não pode ser removido, pois está em uso";
+	
 	@Autowired
 	private EstadoRepository estadoRepository;
-
-	public Estado save(Estado estado) {
+	
+	public Estado salvar(Estado estado) {
 		return estadoRepository.save(estado);
 	}
-
-	public void deleteById(Long estadoId) {
-
+	
+	public void excluir(Long estadoId) {
 		try {
 			estadoRepository.deleteById(estadoId);
-
+			
 		} catch (EmptyResultDataAccessException e) {
-			throw new EntidadeNaoEncontradaException("Estado de codigo " + estadoId + " não foi encontrada.");
-
+			throw new EstadoNaoEncontradoException(estadoId);
+		
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(
-					"Estado de codigo " + estadoId + " não pode ser removida pois está em uso.");
+				String.format(MSG_ESTADO_EM_USO, estadoId));
 		}
-
 	}
+
+	public Estado buscarOuFalhar(Long estadoId) {
+		return estadoRepository.findById(estadoId)
+			.orElseThrow(() -> new EstadoNaoEncontradoException(estadoId));
+	}
+	
 }
