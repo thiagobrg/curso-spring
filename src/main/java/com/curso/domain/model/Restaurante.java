@@ -17,6 +17,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -44,10 +47,13 @@ public class Restaurante {
 	@SequenceGenerator(name = "seq_restaurante", sequenceName = "seq_restaurante", initialValue = 1, allocationSize = 1)
 	@EqualsAndHashCode.Include
 	private Long id;
-
+	
+	@NotBlank
 	@Column(nullable = false)
 	private String nome;
 	
+	@NotNull
+	@PositiveOrZero
 	@Column(name = "taxa_frete", nullable = false)
 	private BigDecimal taxaFrete;
 	
