@@ -2,15 +2,16 @@ DELETE FROM restaurante_forma_pagamento;
 DELETE FROM grupo_permisao;
 DELETE FROM usuario_grupo;
 
-DELETE FROM cidade;
-DELETE FROM cozinha;
-DELETE FROM estado;
+
 DELETE FROM forma_pagamento;
 DELETE FROM grupo;
 DELETE FROM permissao;
 DELETE FROM produto;
 DELETE FROM restaurante;
 DELETE FROM usuario;
+DELETE FROM cozinha;
+DELETE FROM cidade;
+DELETE FROM estado;
 
 SELECT setval('seq_cidade', 1) AS seq_cidade, 
 	   setval('seq_cozinha', 1) AS seq_cozinha,
