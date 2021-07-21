@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.curso.api.model.input.RestauranteInputDTO;
+import com.curso.domain.model.Cidade;
 import com.curso.domain.model.Cozinha;
 import com.curso.domain.model.Restaurante;
 
@@ -26,6 +27,11 @@ public class RestauranteInputDisassembler {
 	public void copyToDomainObject(RestauranteInputDTO restauranteInputDTO, Restaurante restaurante) {
 		//Zera a referencia para evitar exception de troca de IDs.
 		restaurante.setCozinha(new Cozinha());
+		
+		if(restaurante.getEndereco() !=null) {
+			restaurante.getEndereco().setCidade(new Cidade());
+		}
+		
 		modelMapper.map(restauranteInputDTO, restaurante);
 	}
 }

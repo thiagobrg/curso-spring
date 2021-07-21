@@ -4,15 +4,21 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -35,36 +41,58 @@ public class Pedido {
 	@SequenceGenerator(name = "seq_pedido", sequenceName = "seq_pedido", initialValue = 1, allocationSize = 1)
 	@EqualsAndHashCode.Include
 	private Long id;
-	
+	private String codigo;
+
 	private BigDecimal subtotal;
 	private BigDecimal taxaFrete;
 	private BigDecimal valorTotal;
 
 	@Embedded
 	private Endereco enderecoEntrega;
-	
+
+	@Enumerated(EnumType.STRING)
 	private StatusPedido status;
-	
+
 	@CreationTimestamp
 	private OffsetDateTime dataCriacao;
 
 	private OffsetDateTime dataConfirmacao;
 	private OffsetDateTime dataCancelamento;
 	private OffsetDateTime dataEntrega;
-	
-	@ManyToOne
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
 	private FormaPagamento formaPagamento;
-	
+
 	@ManyToOne
 	@JoinColumn(nullable = false)
 	private Restaurante restaurante;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "usuario_cliente_id", nullable = false)
 	private Usuario cliente;
-	
-	@OneToMany(mappedBy = "pedido")
+
+	@OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
 	private List<ItemPedido> itens = new ArrayList<>();
 
+	public void definirFrete() {
+		setTaxaFrete(getRestaurante().getTaxaFrete());
+	}
+
+	public void atribuirPedidoAosItens() {
+		getItens().forEach(item -> item.setPedido(this));
+	}
+
+	public void calcularValorTotal() {
+		getItens().forEach(ItemPedido::calcularPrecoTotal);
+
+		this.subtotal = getItens().stream().map(item -> item.getPrecoTotal()).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+		this.valorTotal = this.subtotal.add(this.taxaFrete);
+	}
+	
+	@PrePersist
+	private void generateCodigo() {
+		setCodigo(UUID.randomUUID().toString());
+	}
 }
